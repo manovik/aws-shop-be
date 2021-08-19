@@ -1,13 +1,15 @@
 {
-  "name": "product-service",
+  "name": "getproductslist",
   "version": "1.0.0",
   "description": "Serverless aws-nodejs-typescript template",
   "main": "serverless.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:list": "sls invoke local --function getProductsList",
+    "test:id": "sls invoke local --function getProductById --path test-id.json",
+    "test:no-id": "sls invoke local --function getProductById --path test-bad-id.json"
   },
   "engines": {
-    "node": ">=14.15.0"
+    "node": ">=12.0.0"
   },
   "dependencies": {
     "@middy/core": "^1.5.2",
