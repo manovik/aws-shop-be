@@ -3,7 +3,7 @@ import 'source-map-support/register';
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
 
-import * as sneakers from '../../mock/sneakers.json' 
+import { sneakers } from '../../mock/sneakers' 
 
 const handler = async () => {
 

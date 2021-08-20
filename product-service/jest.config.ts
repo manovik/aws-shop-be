@@ -1,3 +1,8 @@
+/*
+ * For a detailed explanation regarding each configuration property and type check, visit:
+ * https://jestjs.io/docs/configuration
+ */
+
 export default {
   // All imported modules in your tests should be mocked automatically
   // automock: false,
@@ -6,7 +11,8 @@ export default {
   // bail: 0,
 
   // The directory where Jest should store its cached dependency information
-  // cacheDirectory: "C:\\Users\\maxno\\AppData\\Local\\Temp\\jest",
+  // cacheDirectory: "/private/var/folders/4h/s0_r6yh9045fgm01wdlplzl00000gp/T/jest_dy", // mac
+  // cacheDirectory: "C:\\Users\\{userName}\\AppData\\Local\\Temp\\jest" // win
 
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
@@ -21,14 +27,12 @@ export default {
   coverageDirectory: "coverage",
 
   // An array of regexp pattern strings used to skip coverage collection
-  coveragePathIgnorePatterns: [
-    "./node_modules",
-    "./.serverless",
-    "./.webpack"
-  ],
+  // coveragePathIgnorePatterns: [
+  //   "/node_modules/"
+  // ],
 
   // Indicates which provider should be used to instrument code for coverage
-  // coverageProvider: "babel",
+  coverageProvider: "v8",
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -79,14 +83,12 @@ export default {
   // ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
+  moduleNameMapper: {
+    "^@libs/(.*)$": "<rootDir>/libs/$1"
+  },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
-  modulePathIgnorePatterns: [
-    "./node_modules",
-    "./.serverless",
-    "./.webpack"
-  ],
+  // modulePathIgnorePatterns: [],
 
   // Activates notifications for test results
   // notify: false,
@@ -116,7 +118,7 @@ export default {
   // restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
-  // rootDir: undefined,
+  rootDir: "./src",
 
   // A list of paths to directories that Jest should use to search for files in
   // roots: [
@@ -139,7 +141,7 @@ export default {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: "node",
+  // testEnvironment: "jest-environment-node",
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -155,7 +157,7 @@ export default {
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [
-  //   "\\\\node_modules\\\\"
+  //   "/node_modules/"
   // ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
@@ -174,14 +176,12 @@ export default {
   // timers: "real",
 
   // A map from regular expressions to paths to transformers
-  transform: {
-    ".+\\.tsx?$": "ts-jest"
-  }
+  // transform: undefined,
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [
-  //   "\\\\node_modules\\\\",
-  //   "\\.pnp\\.[^\\\\]+$"
+  //   "/node_modules/",
+  //   "\\.pnp\\.[^\\/]+$"
   // ],
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
