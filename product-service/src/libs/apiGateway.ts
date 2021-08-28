@@ -1,27 +1,41 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult, Handler } from "aws-lambda"
-import type { FromSchema } from "json-schema-to-ts";
-import { Sneaker } from "src/types/types";
+import { STATUS } from '@app/constants';
+import { FormatJSONResponseType, ResponseType } from '@app/types/types';
 
-type ValidatedAPIGatewayProxyEvent<S> = Omit<APIGatewayProxyEvent, 'body'> & { body: FromSchema<S> }
-export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<ValidatedAPIGatewayProxyEvent<S>, APIGatewayProxyResult>
+const headers = {
+  'Access-Control-Allow-Headers': '*',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': '*',
+};
 
-export const formatJSONResponse = (response: Record<string, Sneaker[]>) => {
-  const headers = {
-    'Access-Control-Allow-Headers': '*',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': '*'
-  };
+export const formatJSONResponse = (
+  response: ResponseType
+): FormatJSONResponseType => {
+  const { statusCode, product } = response;
 
-  return response.sneakers.length
-    ? {
-        statusCode: 200,
+  switch (statusCode) {
+    case STATUS.SUCCESS:
+      return {
+        statusCode: STATUS.SUCCESS,
         headers,
-        body: response
-      }
-    : {
-        statusCode: 404,
+        body: JSON.stringify({ product }),
+      };
+    case STATUS.NOT_FOUND:
+      return {
+        statusCode: STATUS.NOT_FOUND,
         headers,
-        body: "Product not found"
-      }
-
-}
+        body: 'Product not found',
+      };
+    case STATUS.SERV_ERR:
+      return {
+        statusCode: STATUS.SERV_ERR,
+        headers,
+        body: 'Something went wrong on the server.\nTry again later.',
+      };
+    default:
+      return {
+        statusCode: STATUS.NOT_FOUND,
+        headers,
+        body: 'Unhandled status code error.\nHere is the default body. Try again later.',
+      };
+  }
+};
