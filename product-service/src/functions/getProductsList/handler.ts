@@ -5,9 +5,16 @@ import { middyfy } from '@libs/lambda';
 import { getAllProducts } from '@libs/getAllProducts';
 import { FormatJSONResponseType, Sneaker } from '@app/types/types';
 
-const handler = async (): Promise<FormatJSONResponseType> => {
+export const handler = async (): Promise<FormatJSONResponseType> => {
   try {
     const product: Sneaker[] = await getAllProducts();
+
+    if(!product || product.length === 0) {
+      return formatJSONResponse({
+        statusCode: 500,
+        product: [],
+      });
+    }
 
     return formatJSONResponse({
       statusCode: 200,
@@ -18,7 +25,11 @@ const handler = async (): Promise<FormatJSONResponseType> => {
       '#18 ###### Something went wrong!\n',
       err,
       '\n#############################'
-    );
+      );
+    return formatJSONResponse({
+      statusCode: 500,
+      product: [],
+    });
   }
 };
 
