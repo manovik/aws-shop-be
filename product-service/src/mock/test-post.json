@@ -1,0 +1,11 @@
+{
+  "body": {
+    "postProduct": {
+      "count": 11,
+      "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png",
+      "price": 100,
+      "description": "This is a test product",
+      "title": "Test product"
+    }
+  }
+}

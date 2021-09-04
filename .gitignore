@@ -1,0 +1,7 @@
+node_modules
+.webpack
+coverage
+.serverless
+db_config.ts
+
+test.json
