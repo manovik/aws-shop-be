@@ -16,6 +16,7 @@ export const PG_postProduct = async ({
   if (
     !count ||
     typeof count !== 'number' ||
+    count < 1 ||
     !img ||
     typeof img !== 'string' ||
     !price ||
@@ -26,7 +27,7 @@ export const PG_postProduct = async ({
     typeof title !== 'string'
   ) {
     logger.info({
-      message: `#29 ###### ${productErrorText}`,
+      msg: `#29 ###### ${productErrorText}`,
       passedParams: {
         count,
         img,
@@ -64,13 +65,13 @@ export const PG_postProduct = async ({
     );
     const hashEnd = `...${rows[0].id.slice(-6)}`
     logger.info({
-      message: `${hashEnd} added to database now`,
+      msg: `${hashEnd} added to database now`,
     });
 
     return hashEnd;
   } catch (error: unknown) {
     logger.info({
-      message: '#73 ###### Something went wrong with database!\n',
+      msg: '#73 ###### Something went wrong with database!\n',
       error
     });
     return {
