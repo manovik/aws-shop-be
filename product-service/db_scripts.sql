@@ -31,6 +31,7 @@ insert into products (title, description, price) values
 -- ### # POST ONE PRODUCT INTO SEVERAL TABLES WITH ALL PARAMS PROVIDED
 -- ### # NOTE: id is generated in DB, then it will be passed to other tables
 
+begin;
 with prod as (
     insert into products (title, description, price) values
       ('${title}', '${description}', ${price})
@@ -42,6 +43,7 @@ with prod as (
   insert into images (image_id, image_link) values
     ((select id from prod), '${img}')
   returning (select id from prod);
+commit;
 
 -- ### # SELECT ALL PRODUCTS WITH ALL PROPS FROM ALL TABLES where stocks.count > 0
 

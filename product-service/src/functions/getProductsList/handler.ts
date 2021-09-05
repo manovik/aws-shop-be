@@ -18,7 +18,7 @@ export const handler = async (): Promise<FormatJSONResponseType> => {
       });
     }
     logger.info({
-      message: `Getting product list.`,
+      msg: `Getting product list.`,
     });
     return formatJSONResponse({
       statusCode: STATUS.SUCCESS,
@@ -26,7 +26,7 @@ export const handler = async (): Promise<FormatJSONResponseType> => {
     });
   } catch (error: unknown) {
     logger.info({
-      message: '#29 ###### Something went wrong while getting product list!',
+      msg: '#29 ###### Something went wrong while getting product list!',
       error,
     });
     return formatJSONResponse({

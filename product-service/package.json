@@ -16,6 +16,7 @@
   "dependencies": {
     "@middy/core": "^1.5.2",
     "@middy/http-json-body-parser": "^1.5.2",
+    "bunyan": "^1.8.15",
     "pg": "^8.7.1",
     "source-map-support": "^0.5.19"
   },
@@ -31,7 +32,6 @@
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
     "babel-jest": "^27.0.6",
-    "bunyan": "^1.8.15",
     "eslint": "^7.32.0",
     "jest": "^27.0.6",
     "json-schema-to-ts": "^1.5.0",

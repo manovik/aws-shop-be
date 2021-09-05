@@ -16,7 +16,7 @@ export const PG_getProductById = async (id: string): Promise<Sneaker[]> => {
     return rows;
   } catch (error: unknown) {
     logger.info({
-      message: '#19 ###### Something went wrong while getting product by Id!',
+      msg: '#19 ###### Something went wrong while getting product by Id!',
       error
     });
   } finally {

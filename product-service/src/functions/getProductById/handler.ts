@@ -16,7 +16,7 @@ export const handler = async (
     const products: Sneaker[] = await PG_getProductById(id)
     
     logger.info({
-      message: `Getting product with id ${id}`,
+      msg: `Getting product with id ${id}`,
     });
 
     return formatJSONResponse({
@@ -25,7 +25,7 @@ export const handler = async (
     });
   } catch (error: unknown) {
     logger.info({
-      message: `#28 ###### Something went wrong! Failed to get product with id ${event.pathParameters.id}`,
+      msg: `#28 ###### Something went wrong! Failed to get product with id ${event.pathParameters.id}`,
       error
     });
     return formatJSONResponse({

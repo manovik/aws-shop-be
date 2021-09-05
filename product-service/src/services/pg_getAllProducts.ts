@@ -14,7 +14,7 @@ export const PG_getAllProducts = async (): Promise<Sneaker[]> => {
     return rows;
   } catch (error: unknown) {
     logger.info({
-      message: '#17 ###### Something went wrong while getting all products!',
+      msg: '#17 ###### Something went wrong while getting all products!',
       error
     });
   } finally {

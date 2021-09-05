@@ -15,7 +15,7 @@ export const handler = async (
     const result = await PG_postProduct(postProduct);
 
     logger.info({
-      message: `Posting new product!`,
+      msg: `Posting new product!`,
     });
 
     if (typeof result === 'string') {
@@ -28,7 +28,7 @@ export const handler = async (
     const { error } = result as { error: string };
 
     logger.info({
-      message: `Failed to post new product!`,
+      msg: `Failed to post new product!`,
       error
     });
 
@@ -38,7 +38,7 @@ export const handler = async (
     });
   } catch (error) {
     logger.info({
-      message: '#41 ###### Something went wrong!\nFailed to post new product!',
+      msg: '#41 ###### Something went wrong!\nFailed to post new product!',
       error
     });
 
