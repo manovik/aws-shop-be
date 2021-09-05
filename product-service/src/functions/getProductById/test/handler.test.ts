@@ -7,7 +7,7 @@ const notFoundResponseExample = {
   statusCode: STATUS.NOT_FOUND,
   body: {
     message: 'Product not found',
-    product: [],
+    product: [] as [],
   },
 };
 
@@ -15,11 +15,11 @@ const serverErrorResponseExample = {
   statusCode: STATUS.SERV_ERR,
   body: {
     message: 'Something went wrong on the server.\nTry again later.',
-    product: []
+    product: [] as [],
   }
 };
 
-const createEvent = (flag: boolean = true): any => ({
+const createEvent = (flag = true): any => ({
   body: 'string',
   headers: { 'Some-header': 'go' },
   httpMethod: 'get',
@@ -52,21 +52,21 @@ const mockRightResponse = {
 describe('Testing getProductById function', () => {
   it('should return "Product not found"', async () => {
     (getById as any).PG_getProductById = jest.fn().mockResolvedValue(null);
-    let response = await handler(createEvent(false));
+    const response = await handler(createEvent(false));
     expect(JSON.parse(response.body as string).message).toEqual(notFoundResponseExample.body.message);
   });
   it('should return 404', async () => {
-    let response = await handler(createEvent(false));
+    const response = await handler(createEvent(false));
     expect(response.statusCode).toEqual(notFoundResponseExample.statusCode);
   });
   it('should return right ID', async () => {
     (getById as any).PG_getProductById = jest.fn().mockResolvedValue([mockSneakers[6]]);
-    let response = await handler(createEvent());
+    const response = await handler(createEvent());
     expect(JSON.parse(response.body as string)).toEqual(mockRightResponse.body);
   });
   it('should return 500', async () => {
     (getById as any).PG_getProductById = jest.fn().mockRejectedValue([]);
-    let response = await handler({} as any);
+    const response = await handler({} as any);
     expect(response.statusCode).toEqual(serverErrorResponseExample.statusCode);
     expect(JSON.parse(response.body as string)).toEqual(serverErrorResponseExample.body);
   });

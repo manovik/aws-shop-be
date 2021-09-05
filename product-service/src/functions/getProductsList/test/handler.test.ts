@@ -9,7 +9,7 @@ const serverErrorResponseExample = {
   statusCode: STATUS.SERV_ERR,
   body: {
     message: 'Something went wrong on the server.\nTry again later.',
-    product: []
+    product: [] as []
   }
 };
 
@@ -20,7 +20,7 @@ describe('Testing getProductsList function', () => {
       .fn()
       .mockResolvedValue(mockSneakers);
     
-    let response = await handler();
+    const response = await handler();
 
     expect(JSON.parse(response.body as string).product).toBeInstanceOf(Array);
     expect(
@@ -29,7 +29,7 @@ describe('Testing getProductsList function', () => {
   });
   it('should return 500', async () => {
     (getAllProducts as any).PG_getAllProducts = jest.fn().mockReturnValue([]);
-    let response = await handler();
+    const response = await handler();
 
     expect(response.statusCode).toEqual(serverErrorResponseExample.statusCode);
     expect(JSON.parse(response.body as string)).toEqual(serverErrorResponseExample.body);

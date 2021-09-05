@@ -5,6 +5,7 @@ import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
 import { STATUS } from '@app/constants';
 import { PG_getProductById } from '@app/services/pg_getProductById';
+import { logger } from '@app/utils/logger';
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -14,16 +15,19 @@ export const handler = async (
 
     const products: Sneaker[] = await PG_getProductById(id)
     
+    logger.info({
+      message: `Getting product with id ${id}`,
+    });
+
     return formatJSONResponse({
       statusCode: products?.length ? STATUS.SUCCESS : STATUS.NOT_FOUND,
       product: products?.length ? products : [],
     });
-  } catch (err) {
-    console.error(
-      '### Something went wrong!\n',
-      err,
-      '\n#########################'
-    );
+  } catch (error: unknown) {
+    logger.info({
+      message: `#28 ###### Something went wrong! Failed to get product with id ${event.pathParameters.id}`,
+      error
+    });
     return formatJSONResponse({
       statusCode: STATUS.SERV_ERR,
       product: [],

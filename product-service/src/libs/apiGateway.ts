@@ -21,7 +21,7 @@ export const formatJSONResponse = (
         body: JSON.stringify({
           product,
           message: (
-            message // add because message may not exist
+            message
             ? message
             : messageCreator(STATUS.SUCCESS)
           )
@@ -34,7 +34,7 @@ export const formatJSONResponse = (
         body: JSON.stringify({
           product,
           message: (
-            message // add because message may not exist
+            message
             ? message
             : messageCreator(STATUS.NOT_FOUND)
           )
@@ -55,14 +55,14 @@ export const formatJSONResponse = (
       };
     default:
       return {
-        statusCode: STATUS.UNHANDLED,
+        statusCode: STATUS.INVALID,
         headers,
         body: JSON.stringify({
-          product: {},
+          product: [],
           message: (
             message
             ? message
-            : messageCreator(STATUS.UNHANDLED)
+            : messageCreator(STATUS.INVALID)
         )
       })
     };

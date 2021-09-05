@@ -1,7 +1,10 @@
 import { PostSneaker } from 'src/types/types';
-import { Client, QueryResult } from 'pg';
+import { Client, QueryResultRow } from 'pg';
 import { dbConfig } from '@app/libs/dbConfig';
 import { postProductSQL } from '@app/sql';
+import { logger } from '@app/utils/logger';
+
+const productErrorText = 'Product was not added to database!';
 
 export const PG_postProduct = async ({
   count,
@@ -9,12 +12,48 @@ export const PG_postProduct = async ({
   price,
   description,
   title,
-}: PostSneaker): Promise<QueryResult<any>> => {
+}: PostSneaker): Promise<string | { error: string }> => {
+  if (
+    !count ||
+    typeof count !== 'number' ||
+    !img ||
+    typeof img !== 'string' ||
+    !price ||
+    typeof price !== 'number' ||
+    !description ||
+    typeof description !== 'string' ||
+    !title ||
+    typeof title !== 'string'
+  ) {
+    logger.info({
+      message: `#29 ###### ${productErrorText}`,
+      passedParams: {
+        count,
+        img,
+        price,
+        description,
+        title,
+      },
+      passedParamsTypes: {
+        count: typeof count,
+        img: typeof img,
+        price: typeof price,
+        description: typeof description,
+        title: typeof title,
+      },
+    });
+    return {
+      error:
+        "One of values was not provided or it's type doesn't passed validation. " +
+        productErrorText,
+    };
+  }
+
   const client = new Client(dbConfig);
   await client.connect();
 
   try {
-    const { rows } = await client.query(
+    const { rows }: {rows: QueryResultRow} = await client.query(
       postProductSQL({
         count,
         img,
@@ -23,14 +62,20 @@ export const PG_postProduct = async ({
         title,
       })
     );
+    const hashEnd = `...${rows[0].id.slice(-6)}`
+    logger.info({
+      message: `${hashEnd} added to database now`,
+    });
 
-    return rows[0].id;
-  } catch (err: unknown) {
-    console.error(
-      '#18 ###### Something went wrong!\n',
-      err,
-      '\n#############################'
-    );
+    return hashEnd;
+  } catch (error: unknown) {
+    logger.info({
+      message: '#73 ###### Something went wrong with database!\n',
+      error
+    });
+    return {
+      error: productErrorText,
+    };
   } finally {
     client.end();
   }

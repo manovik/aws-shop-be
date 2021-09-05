@@ -5,6 +5,7 @@ import { middyfy } from '@libs/lambda';
 import { PG_getAllProducts } from '@app/services/pg_getAllProducts';
 import { FormatJSONResponseType, Sneaker } from '@app/types/types';
 import { STATUS } from '@app/constants';
+import { logger } from '@app/utils/logger';
 
 export const handler = async (): Promise<FormatJSONResponseType> => {
   try {
@@ -16,17 +17,18 @@ export const handler = async (): Promise<FormatJSONResponseType> => {
         product: [],
       });
     }
-
+    logger.info({
+      message: `Getting product list.`,
+    });
     return formatJSONResponse({
       statusCode: STATUS.SUCCESS,
       product,
     });
-  } catch (err: unknown) {
-    console.error(
-      '#26 ###### Something went wrong!\n',
-      err,
-      '\n#############################'
-    );
+  } catch (error: unknown) {
+    logger.info({
+      message: '#29 ###### Something went wrong while getting product list!',
+      error,
+    });
     return formatJSONResponse({
       statusCode: STATUS.SERV_ERR,
       product: [],
