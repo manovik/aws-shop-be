@@ -37,7 +37,8 @@ export const postProductSQL = ({
   description,
   title,
 }: PostSneaker): string =>
-  `with prod as (
+  `begin;
+  with prod as (
     insert into products (title, description, price) values
       ('${title}', '${description}', ${price})
       returning id
@@ -47,4 +48,5 @@ export const postProductSQL = ({
   )	
   insert into images (image_id, image_link) values
     ((select id from prod), '${img}')
-  returning (select id from prod);`;
+  returning (select id from prod);
+  commit;`;
