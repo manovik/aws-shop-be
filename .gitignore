@@ -3,5 +3,5 @@ node_modules
 coverage
 .serverless
 db_config.ts
-
+.DS_Store
 test.json
