@@ -2,14 +2,17 @@ import 'source-map-support/register';
 
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
-import { S3 } from 'aws-sdk';
+import { S3, SQS } from 'aws-sdk';
 import { GLOBAL_INFO } from '@app/constants';
 import { S3Event } from 'aws-lambda';
 import * as csv from 'csv-parser';
 
+type Result = Record<string, unknown>[]
+
 const handler = async (event: S3Event) => {
   const s3 = new S3({ region: GLOBAL_INFO.REGION });
-  const result: Record<string, unknown>[] = [];
+  const sqs = new SQS();
+  const result: Result = [];
 
   try {
     for (let record of event.Records) {
@@ -20,8 +23,15 @@ const handler = async (event: S3Event) => {
         readableStream
           .pipe(csv())
           .on('data', (data: Record<string, unknown>) => {
-            result.push(data);
-            console.log('CSV Parser did it --->', data);
+            sqs.sendMessage({
+              QueueUrl: process.env.SQS_URL,
+              MessageBody: JSON.stringify(data),
+            }, (err) => {
+              if (err) console.error(`Error occurred while sending message to SQS: ${err}`);
+              result.push(data);
+            });
+            console.log('After parsing : ', data);
+            
           })
           .on('err', (err: Error) => {
             console.error(`Error occurred while reading data from bucket '${GLOBAL_INFO.CSV_BUCKET}'. ${err}`);
@@ -45,7 +55,10 @@ const handler = async (event: S3Event) => {
 
     return formatJSONResponse({
       statusCode: 200,
-      response: result,
+      response: {
+        message: 'Array data to be send to SQS.',
+        result
+      },
     });
   } catch (err: unknown) {
     return formatJSONResponse({
