@@ -3,13 +3,14 @@ import 'source-map-support/register';
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
 import { SNS } from 'aws-sdk';
-import { GLOBAL_INFO } from '@app/constants';
+import { GLOBAL_INFO, STATUS } from '@app/constants';
 import { SQSEvent } from 'aws-lambda';
+import { logger } from '@app/utils/logger';
 
 const handler = async (event: SQSEvent) => {
   const sns = new SNS({ region: GLOBAL_INFO.REGION });
   const products = event.Records.map(({ body }) => body);
-  console.log(event);
+  logger.info({ msg: products });
   
   try {
     sns.publish({
@@ -17,17 +18,23 @@ const handler = async (event: SQSEvent) => {
       Message: JSON.stringify(products),
       TopicArn: process.env.SNS_ARN,
     }, (err: unknown) => {
-      console.error('Something went wrong while publishing message.', err);
+      if (err) {
+        logger.info({
+          msg: 'Something went wrong while publishing message.', 
+          err
+        });
+      }
+      
     })
 
     return formatJSONResponse({
       response: event,
-      statusCode: 200
+      statusCode: STATUS.SUCCESS
     });
   } catch (err: any) {
     return formatJSONResponse({
       response: err,
-      statusCode: 500
+      statusCode: STATUS.SERV_ERR
     });
   }
 }
