@@ -3,7 +3,7 @@ import * as functions from '@app/functions';
 import { GLOBAL_INFO } from '@app/constants';
 
 const serverlessConfiguration: AWS = {
-  service: GLOBAL_INFO.SERVICE_NAME,
+  service: GLOBAL_INFO.IMPORT_SERVICE,
   frameworkVersion: '2',
   custom: {
     webpack: {
@@ -22,12 +22,7 @@ const serverlessConfiguration: AWS = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-      SQS_URL: {
-        Ref: 'SQSQueue',
-      },
-      SNS_ARN: {
-        Ref: 'SNSTopic',
-      }
+      SQS_URL: GLOBAL_INFO.SQS_URL,
     },
     lambdaHashingVersion: '20201221',
     iamRoleStatements: [
@@ -44,44 +39,9 @@ const serverlessConfiguration: AWS = {
       {
         Effect: 'Allow',
         Action: 'sqs:*',
-        Resource: {
-          'Fn::GetAtt': [ 'SQSQueue', 'Arn' ],
-        }
-      },
-      {
-        Effect: 'Allow',
-        Action: 'sns:*',
-        Resource: {
-          Ref: 'SNSTopic'
-        }
+        Resource: 'arn:aws:sqs:eu-west-1:388532396205:product-service-queue'
       },
     ],
-  },
-  resources: {
-    Resources: {
-      SQSQueue: {
-        Type: 'AWS::SQS::Queue',
-        Properties: {
-          QueueName: `${GLOBAL_INFO.SERVICE_NAME}-queue`
-        }
-      },
-      SNSTopic: {
-        Type: 'AWS::SNS::Topic',
-        Properties: {
-          TopicName: `${GLOBAL_INFO.SERVICE_NAME}-topic`
-        }
-      },
-      SNSSubscription: {
-        Type: 'AWS::SNS::Subscription',
-        Properties: {
-          Endpoint: 'maxnovbel@mail.ru',
-          Protocol: 'email',
-          TopicArn: {
-            Ref: 'SNSTopic'
-          }
-        }
-      }
-    },
   },
   functions,
 };

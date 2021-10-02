@@ -18,41 +18,33 @@ const handler = async (event: S3Event) => {
   try {
     for (let record of event.Records) {
       const { key } = record.s3.object;
-      logger.info({
-        msg: `Start reading '${key}' from bucket '${GLOBAL_INFO.CSV_BUCKET}'`,
-      });
+      logger.info(`Start reading '${key}' from bucket '${GLOBAL_INFO.CSV_BUCKET}'`);
       await new Promise((res: (value: unknown) => void, rej: (error?: Error) => void): void => {
         const readableStream = s3.getObject({ Bucket: GLOBAL_INFO.CSV_BUCKET, Key: key }).createReadStream();
         readableStream
           .pipe(csv())
           .on('data', (data: Record<string, unknown>) => {
+            const jsonData = JSON.stringify(data);
             sqs.sendMessage({
               QueueUrl: process.env.SQS_URL,
-              MessageBody: JSON.stringify(data),
+              MessageBody: jsonData,
             }, (err) => {
               if (err) {
-                logger.info({
-                  msg: `Error occurred while sending message to SQS.`,
-                  err
-                });
+                logger.info(
+                  err,
+                  `Error occurred while sending message to SQS.`,
+                );
               }
               result.push(data);
             });
-            logger.info({
-              msg: `End of sending data:\n${data}`,
-            });
+            logger.info(`End of sending data:\n${jsonData}`);
           })
           .on('err', (err: Error) => {
-            logger.info({
-              msg: `Error occurred while reading data from bucket '${GLOBAL_INFO.CSV_BUCKET}'.`,
-              err
-            });
+            logger.info(err, `Error occurred while reading data from bucket '${GLOBAL_INFO.CSV_BUCKET}'.`);
             rej(err);
           })
           .on('end', async () => {
-            logger.info({
-              msg: `End of reading '${key}' from bucket '${GLOBAL_INFO.CSV_BUCKET}'`,
-            });
+            logger.info(`End of reading '${key}' from bucket '${GLOBAL_INFO.CSV_BUCKET}'`);
             await s3.copyObject({
               Bucket: GLOBAL_INFO.CSV_BUCKET,
               CopySource: `${GLOBAL_INFO.CSV_BUCKET}/${key}`,
@@ -64,18 +56,15 @@ const handler = async (event: S3Event) => {
               Key: key
             }).promise();
 
-            logger.info({
-              msg: `Object '${key}' was copied from '${GLOBAL_INFO.CSV_BUCKET}/${GLOBAL_INFO.UPLOADED}' to '${GLOBAL_INFO.CSV_BUCKET}/${GLOBAL_INFO.PARSED}'`,
-            });
-          })
+            logger.info(`Object '${key}' was copied from '${GLOBAL_INFO.CSV_BUCKET}/${GLOBAL_INFO.UPLOADED}' to '${GLOBAL_INFO.CSV_BUCKET}/${GLOBAL_INFO.PARSED}'`,);
+          });
       });
     }
 
     return formatJSONResponse({
       statusCode: 200,
       response: {
-        message: 'Array data to be send to SQS.',
-        result
+        message: 'Data has been sent to SQS.'
       },
     });
   } catch (err: unknown) {
