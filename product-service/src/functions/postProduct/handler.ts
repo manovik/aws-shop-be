@@ -14,9 +14,7 @@ export const handler = async (
     const { postProduct }: { postProduct: PostSneaker } = event.body as any;
     const result = await PG_postProduct(postProduct);
 
-    logger.info({
-      msg: `Posting new product!`,
-    });
+    logger.info(`Posting new product!`);
 
     if (typeof result === 'string') {
       return formatJSONResponse({
@@ -27,20 +25,20 @@ export const handler = async (
 
     const { error } = result as { error: string };
 
-    logger.info({
-      msg: `Failed to post new product!`,
-      error
-    });
+    logger.info(
+      { err: error },
+      `Failed to post new product!`,
+    );
 
     return formatJSONResponse({
       statusCode: STATUS.INVALID,
       message: error,
     });
-  } catch (error) {
-    logger.info({
-      msg: '#41 ###### Something went wrong!\nFailed to post new product!',
-      error
-    });
+  } catch (err: unknown) {
+    logger.info(
+      err,
+      '#40 ###### Something went wrong!\nFailed to post new product!',
+    );
 
     return formatJSONResponse({
       statusCode: STATUS.SERV_ERR,

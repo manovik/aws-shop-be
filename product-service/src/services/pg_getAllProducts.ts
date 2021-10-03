@@ -12,11 +12,11 @@ export const PG_getAllProducts = async (): Promise<Sneaker[]> => {
     const { rows }: { rows: Sneaker[] } = await client.query(getAllProductsSQL());
 
     return rows;
-  } catch (error: unknown) {
-    logger.info({
-      msg: '#17 ###### Something went wrong while getting all products!',
-      error
-    });
+  } catch (err: unknown) {
+    logger.info(
+      err,
+      '#18 ###### Something went wrong while getting all products!',
+    );
   } finally {
     client.end();
   }

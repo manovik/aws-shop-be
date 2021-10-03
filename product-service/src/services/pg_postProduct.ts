@@ -26,23 +26,25 @@ export const PG_postProduct = async ({
     !title ||
     typeof title !== 'string'
   ) {
-    logger.info({
-      msg: `#29 ###### ${productErrorText}`,
-      passedParams: {
-        count,
-        img,
-        price,
-        description,
-        title,
+    logger.info(
+      `#30 ###### ${productErrorText}`,
+      {
+        passedParams: {
+          count,
+          img,
+          price,
+          description,
+          title,
+        },
+        passedParamsTypes: {
+          count: typeof count,
+          img: typeof img,
+          price: typeof price,
+          description: typeof description,
+          title: typeof title,
+        },
       },
-      passedParamsTypes: {
-        count: typeof count,
-        img: typeof img,
-        price: typeof price,
-        description: typeof description,
-        title: typeof title,
-      },
-    });
+    );
     return {
       error:
         "One of values was not provided or it's type doesn't passed validation. " +
@@ -64,16 +66,14 @@ export const PG_postProduct = async ({
       })
     );
     const hashEnd = `...${rows[0].id.slice(-6)}`
-    logger.info({
-      msg: `${hashEnd} added to database now`,
-    });
+    logger.info(`${hashEnd} added to database now`);
 
     return hashEnd;
-  } catch (error: unknown) {
-    logger.info({
-      msg: '#73 ###### Something went wrong with database!\n',
-      error
-    });
+  } catch (err: unknown) {
+    logger.info(
+      err,
+      '#75 ###### Something went wrong with database!\n',
+    );
     return {
       error: productErrorText,
     };

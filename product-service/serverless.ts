@@ -4,7 +4,7 @@ import { pg_db_config } from './db_config';
 import { GLOBAL_INFO } from '@app/constants';
 
 const serverlessConfiguration: AWS = {
-  service: 'get-products-list',
+  service: 'product-service',
   frameworkVersion: '2',
   custom: {
     webpack: {
