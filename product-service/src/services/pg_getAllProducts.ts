@@ -9,7 +9,7 @@ export const PG_getAllProducts = async (): Promise<Sneaker[]> => {
   await client.connect();
 
   try {
-    const { rows }: { rows: Sneaker[] } = await client.query(getAllProductsSQL());
+    const { rows } = await client.query<Sneaker>(getAllProductsSQL());
 
     return rows;
   } catch (err: unknown) {
