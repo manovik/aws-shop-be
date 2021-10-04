@@ -22,5 +22,5 @@
         "eol-last": ["error", "always"],
         "template-curly-spacing": ["error", "always"]
     },
-    "ignorePatterns": ["webpack.config.js", "jest.config.ts", "*.test.ts"]
+    "ignorePatterns": ["webpack.config.js", "jest.config.ts"]
 }
