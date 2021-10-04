@@ -22,24 +22,24 @@ const serverlessConfiguration: AWS = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-      SQS_URL: GLOBAL_INFO.SQS_URL,
+      SQS_URL: `\${cf:${ GLOBAL_INFO.PRODUCT_SERVICE }-dev.catalogItemsQueueRef}`,
     },
     lambdaHashingVersion: '20201221',
     iamRoleStatements: [
       {
         Effect: 'Allow',
         Action: 's3:ListBucket',
-        Resource: `arn:aws:s3:::csv-bucket-${GLOBAL_INFO.REGION}-pinapple-shop`
+        Resource: `arn:aws:s3:::csv-bucket-${ GLOBAL_INFO.REGION }-pinapple-shop`
       },
       {
         Effect: 'Allow',
         Action: 's3:*',
-        Resource: `arn:aws:s3:::csv-bucket-${GLOBAL_INFO.REGION}-pinapple-shop/*`
+        Resource: `arn:aws:s3:::csv-bucket-${ GLOBAL_INFO.REGION }-pinapple-shop/*`
       },
       {
         Effect: 'Allow',
         Action: 'sqs:*',
-        Resource: 'arn:aws:sqs:eu-west-1:388532396205:product-service-queue'
+        Resource: `\${cf:${ GLOBAL_INFO.PRODUCT_SERVICE }-dev.catalogItemsQueueArn}`
       },
     ],
   },

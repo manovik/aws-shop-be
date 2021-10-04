@@ -11,15 +11,14 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<FormatJSONResponseType> => {
   try {
-    const { postProduct }: { postProduct: PostSneaker } = event.body as any;
+    const { postProduct }: { postProduct: PostSneaker } = JSON.parse(event.body);
     const result = await PG_postProduct(postProduct);
 
-    logger.info(`Posting new product!`);
-
     if (typeof result === 'string') {
+      logger.info('Posted new product!');
       return formatJSONResponse({
         statusCode: STATUS.SUCCESS,
-        message: `Product with id ${result} successfuly added to database`,
+        message: 'Product successfully added to database',
       });
     }
 
@@ -27,7 +26,7 @@ export const handler = async (
 
     logger.info(
       { err: error },
-      `Failed to post new product!`,
+      'Failed to post new product!',
     );
 
     return formatJSONResponse({

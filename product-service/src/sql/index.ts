@@ -1,4 +1,5 @@
 import { PostSneaker } from '@app/types/types';
+import { logger } from '@app/utils/logger';
 
 export const getAllProductsSQL = (): string =>
   `select
@@ -28,25 +29,35 @@ export const getProductByIdSQL = (id: string): string =>
   on stocks.product_id = products.id
   left join images
   on stocks.product_id = images.image_id
-  where stocks.product_id = '${id}'`;
+  where stocks.product_id = '${ id }'`;
 
 export const postProductSQL = ({
   count,
   img,
   price,
   description,
-  title,
-}: PostSneaker): string =>
-  `begin;
-  with prod as (
+  title
+}: PostSneaker): string => {
+  logger.info(
+    'LOG FROM postProductSQL',
+    {
+      count,
+      img,
+      price,
+      description,
+      title
+    }
+  );
+  
+  return `with prod as (
     insert into products (title, description, price) values
-      ('${title}', '${description}', ${price})
-      returning id
-  ), stock as (
-    insert into stocks (product_id, count) values
-      ((select id from prod), ${count})
-  )	
-  insert into images (image_id, image_link) values
-    ((select id from prod), '${img}')
-  returning (select id from prod);
-  commit;`;
+    ('${ title }', '${ description }', ${ price })
+    returning id
+    ), stock as (
+      insert into stocks (product_id, count) values
+      ((select id from prod), ${ count })
+      )	
+      insert into images (image_id, image_link) values
+      ((select id from prod), '${ img }');`;
+  
+};

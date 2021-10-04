@@ -37,7 +37,7 @@ const serverlessConfiguration: AWS = {
         Effect: 'Allow',
         Action: 'sqs:*',
         Resource: {
-          'Fn::GetAtt': [ 'catalogItemsQueue', 'Arn' ],
+          'Fn::GetAtt': ['catalogItemsQueue', 'Arn'],
         }
       },
       {
@@ -54,26 +54,61 @@ const serverlessConfiguration: AWS = {
       catalogItemsQueue: {
         Type: 'AWS::SQS::Queue',
         Properties: {
-          QueueName: `${GLOBAL_INFO.PRODUCT_SERVICE}-queue`
+          QueueName: `${ GLOBAL_INFO.PRODUCT_SERVICE }-queue`
         }
       },
       createProductTopic: {
         Type: 'AWS::SNS::Topic',
         Properties: {
-          TopicName: `${GLOBAL_INFO.PRODUCT_SERVICE}-topic`
+          TopicName: `${ GLOBAL_INFO.PRODUCT_SERVICE }-topic`
         }
       },
       SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'maxnovbet@gmail.com',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'createProductTopic'
+          },
+        }
+      },
+      SNSSubscription2: {
         Type: 'AWS::SNS::Subscription',
         Properties: {
           Endpoint: 'maxnovbel@mail.ru',
           Protocol: 'email',
           TopicArn: {
             Ref: 'createProductTopic'
+          },
+          FilterPolicy: {
+            price: [
+              { 'numeric': ['>=', 350] }
+            ]
           }
         }
-      }
+      },
     },
+    Outputs: {
+      catalogItemsQueueRef: {
+        Value: {
+          Ref: 'catalogItemsQueue'
+        },
+        Export: {
+          Name: { 'Fn::Sub': '${AWS::StackName}-${AWS::Region}-catalogQueueLink' }
+        },
+        Description: 'Export link to catalog queue',
+      },
+      catalogItemsQueueArn: {
+        Value: {
+          'Fn::GetAtt': ['catalogItemsQueue', 'Arn'],
+        },
+        Export: {
+          Name: { 'Fn::Sub': '${AWS::StackName}-${AWS::Region}-catalogQueueArn' }
+        },
+        Description: 'Export arn to catalog queue',
+      },
+    }
   },
   functions,
 };
