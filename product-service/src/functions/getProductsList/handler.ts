@@ -17,7 +17,7 @@ export const handler = async (): Promise<FormatJSONResponseType> => {
         product: [],
       });
     }
-    logger.info(`Getting product list.`);
+    logger.info('Getting product list.');
     return formatJSONResponse({
       statusCode: STATUS.SUCCESS,
       product,

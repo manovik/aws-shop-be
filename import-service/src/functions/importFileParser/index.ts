@@ -3,7 +3,7 @@ import { GLOBAL_INFO } from '@app/constants';
 import { handlerPath } from '@libs/handlerResolver';
 
 export default {
-  handler: `${handlerPath(__dirname)}/handler.importFileParser`,
+  handler: `${ handlerPath(__dirname) }/handler.importFileParser`,
   events: [
     {
       s3: {
@@ -18,4 +18,4 @@ export default {
       }
     }
   ]
-}
+};
