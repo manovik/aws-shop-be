@@ -23,6 +23,7 @@ const serverlessConfiguration: AWS = {
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
+    region: 'eu-west-1',
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -32,6 +33,18 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
     },
     lambdaHashingVersion: '20201221',
+  },  
+  resources: {
+    Outputs: {
+      basicAuthorizerLambdaArn: {
+        Value: {
+          'Fn::GetAtt': ['basicAuthorizer', 'Arn']
+        },
+        Export: {
+          Name: 'basicAuthorizerArn'
+        }
+      }
+    }
   },
   functions,
 };
