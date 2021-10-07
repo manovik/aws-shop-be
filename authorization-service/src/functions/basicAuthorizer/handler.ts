@@ -5,11 +5,13 @@ export const basicAuthorizer = async (event: APIGatewayRequestAuthorizerEvent, _
   if (event.type !== 'REQUEST') callback('Unauthorized');
 
   try {
-    const { authorizationToken } = event.queryStringParameters;
-    console.log('authorizationToken: ', authorizationToken);
+    const { token } = event.queryStringParameters;
+    console.log('authorization token: ', token);
 
-    const buffer = Buffer.from(authorizationToken, 'base64');
+    const buffer = Buffer.from(token, 'base64');
     const [username, password] = buffer.toString('utf-8').split(':');
+
+    console.log(JSON.stringify({username, password}));
 
     const originPassword = process.env[username];
 
