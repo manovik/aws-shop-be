@@ -3,30 +3,36 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import { FormatJSONResponseType, Sneaker } from '@app/types/types';
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
-import { getAllProducts } from '@libs/getAllProducts';
-import { find } from '@libs/find';
+import { STATUS } from '@app/constants';
+import { PG_getProductById } from '@app/services/pg_getProductById';
+import { logger } from '@app/utils/logger';
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<FormatJSONResponseType> => {
+export const handler = async (
+  event: APIGatewayProxyEvent
+): Promise<FormatJSONResponseType> => {
   try {
     const { id } = event.pathParameters;
-    const sneakers: Sneaker[] = await getAllProducts();
-    const product: Sneaker = find(sneakers, id);
+
+    const products: Sneaker[] = await PG_getProductById(id)
     
-    return formatJSONResponse({
-      statusCode: product ? 200 : 404,
-      product: product ? [ product ] : []
+    logger.info({
+      msg: `Getting product with id ${id}`,
     });
-  } catch (err) {
-    console.error(
-      '### Something went wrong!\n',
-      err,
-      '\n#########################'
-    );
+
     return formatJSONResponse({
-      statusCode: 500,
-      product: []
+      statusCode: products?.length ? STATUS.SUCCESS : STATUS.NOT_FOUND,
+      product: products?.length ? products : [],
+    });
+  } catch (error: unknown) {
+    logger.info({
+      msg: `#28 ###### Something went wrong! Failed to get product with id ${event.pathParameters.id}`,
+      error
+    });
+    return formatJSONResponse({
+      statusCode: STATUS.SERV_ERR,
+      product: [],
     });
   }
-}
+};
 
 export const getProductById = middyfy(handler);

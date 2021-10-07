@@ -1,5 +1,6 @@
 import { STATUS } from '@app/constants';
 import { FormatJSONResponseType, ResponseType } from '@app/types/types';
+import { messageCreator } from './messageCreator';
 
 const headers = {
   'Access-Control-Allow-Headers': '*',
@@ -10,32 +11,60 @@ const headers = {
 export const formatJSONResponse = (
   response: ResponseType
 ): FormatJSONResponseType => {
-  const { statusCode, product } = response;
+  const { statusCode, product, message } = response;
 
   switch (statusCode) {
     case STATUS.SUCCESS:
       return {
         statusCode: STATUS.SUCCESS,
         headers,
-        body: JSON.stringify({ product }),
+        body: JSON.stringify({
+          product,
+          message: (
+            message
+            ? message
+            : messageCreator(STATUS.SUCCESS)
+          )
+        }),
       };
     case STATUS.NOT_FOUND:
       return {
         statusCode: STATUS.NOT_FOUND,
         headers,
-        body: 'Product not found',
+        body: JSON.stringify({
+          product,
+          message: (
+            message
+            ? message
+            : messageCreator(STATUS.NOT_FOUND)
+          )
+        })
       };
     case STATUS.SERV_ERR:
       return {
         statusCode: STATUS.SERV_ERR,
         headers,
-        body: 'Something went wrong on the server.\nTry again later.',
+        body: JSON.stringify({
+          product,
+          message: (
+            message
+            ? message
+            : messageCreator(STATUS.SERV_ERR)
+          )
+        })
       };
     default:
       return {
-        statusCode: STATUS.NOT_FOUND,
+        statusCode: STATUS.INVALID,
         headers,
-        body: 'Unhandled status code error.\nHere is the default body. Try again later.',
-      };
+        body: JSON.stringify({
+          product: [],
+          message: (
+            message
+            ? message
+            : messageCreator(STATUS.INVALID)
+        )
+      })
+    };
   }
 };

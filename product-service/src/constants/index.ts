@@ -1,5 +1,6 @@
 export enum STATUS {
   SUCCESS = 200,
+  INVALID = 400,
   NOT_FOUND = 404,
   SERV_ERR = 500
 }

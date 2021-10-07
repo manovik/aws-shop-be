@@ -2,32 +2,35 @@ import 'source-map-support/register';
 
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
-import { getAllProducts } from '@libs/getAllProducts';
+import { PG_getAllProducts } from '@app/services/pg_getAllProducts';
 import { FormatJSONResponseType, Sneaker } from '@app/types/types';
+import { STATUS } from '@app/constants';
+import { logger } from '@app/utils/logger';
 
 export const handler = async (): Promise<FormatJSONResponseType> => {
   try {
-    const product: Sneaker[] = await getAllProducts();
+    const product: Sneaker[] = await PG_getAllProducts();
 
-    if(!product || product.length === 0) {
+    if (!product || product.length === 0) {
       return formatJSONResponse({
-        statusCode: 500,
+        statusCode: STATUS.SERV_ERR,
         product: [],
       });
     }
-
+    logger.info({
+      msg: `Getting product list.`,
+    });
     return formatJSONResponse({
-      statusCode: 200,
+      statusCode: STATUS.SUCCESS,
       product,
     });
-  } catch (err) {
-    console.error(
-      '#18 ###### Something went wrong!\n',
-      err,
-      '\n#############################'
-      );
+  } catch (error: unknown) {
+    logger.info({
+      msg: '#29 ###### Something went wrong while getting product list!',
+      error,
+    });
     return formatJSONResponse({
-      statusCode: 500,
+      statusCode: STATUS.SERV_ERR,
       product: [],
     });
   }

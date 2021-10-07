@@ -1,17 +1,25 @@
 import { handler } from '../handler';
-import { getAllProducts } from '@libs/getAllProducts';
+import * as getById from '@app/services/PG_getProductById';
+import { STATUS } from '@app/constants';
+import mockSneakers from '@app/mock/sneakersMock.json';
 
 const notFoundResponseExample = {
-  statusCode: 404,
-  body: 'Product not found',
+  statusCode: STATUS.NOT_FOUND,
+  body: {
+    message: 'Product not found',
+    product: [] as [],
+  },
 };
 
 const serverErrorResponseExample = {
-  statusCode: 500,
-  body: 'Something went wrong on the server.\nTry again later.',
+  statusCode: STATUS.SERV_ERR,
+  body: {
+    message: 'Something went wrong on the server.\nTry again later.',
+    product: [] as [],
+  }
 };
 
-const createEvent = (flag: boolean = true): any => ({
+const createEvent = (flag = true): any => ({
   body: 'string',
   headers: { 'Some-header': 'go' },
   httpMethod: 'get',
@@ -25,8 +33,9 @@ const createEvent = (flag: boolean = true): any => ({
 });
 
 const mockRightResponse = {
-  statusCode: 200,
+  statusCode: STATUS.SUCCESS,
   body: {
+    message: 'OK!',
     product: [
       {
         count: 10,
@@ -40,31 +49,25 @@ const mockRightResponse = {
   },
 };
 
-jest.mock('@libs/getAllProducts', () => {
-  const mockSneakers = require('@app/mock/sneakersMock.json');
-
-  return {
-    getAllProducts: jest.fn().mockReturnValue(mockSneakers),
-  };
-});
-
 describe('Testing getProductById function', () => {
   it('should return "Product not found"', async () => {
-    let response = await handler(createEvent(false));
-    expect(response.body).toEqual(notFoundResponseExample.body);
+    (getById as any).PG_getProductById = jest.fn().mockResolvedValue(null);
+    const response = await handler(createEvent(false));
+    expect(JSON.parse(response.body as string).message).toEqual(notFoundResponseExample.body.message);
   });
   it('should return 404', async () => {
-    let response = await handler(createEvent(false));
+    const response = await handler(createEvent(false));
     expect(response.statusCode).toEqual(notFoundResponseExample.statusCode);
   });
   it('should return right ID', async () => {
-    let response = await handler(createEvent());
-    expect(response.body).toEqual(JSON.stringify(mockRightResponse.body));
+    (getById as any).PG_getProductById = jest.fn().mockResolvedValue([mockSneakers[6]]);
+    const response = await handler(createEvent());
+    expect(JSON.parse(response.body as string)).toEqual(mockRightResponse.body);
   });
   it('should return 500', async () => {
-    jest.fn(getAllProducts).mockRejectedValue([]);
-    let response = await handler({} as any);
+    (getById as any).PG_getProductById = jest.fn().mockRejectedValue([]);
+    const response = await handler({} as any);
     expect(response.statusCode).toEqual(serverErrorResponseExample.statusCode);
-    expect(response.body).toEqual(serverErrorResponseExample.body);
+    expect(JSON.parse(response.body as string)).toEqual(serverErrorResponseExample.body);
   });
 });

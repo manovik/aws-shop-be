@@ -7,6 +7,8 @@ export type Sneaker = {
   title: string
 }
 
+export type PostSneaker = Omit<Sneaker, 'id'>;
+
 export type FormatJSONResponseType = {
   statusCode: number;
   headers: {
@@ -19,5 +21,6 @@ export type FormatJSONResponseType = {
 
 export type ResponseType = {
   statusCode: number
-  product: Sneaker[]
+  product?: Sneaker[]
+  message?: string
 }

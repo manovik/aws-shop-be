@@ -1,5 +1,7 @@
 node_modules
 .webpack
 coverage
-
+.serverless
+db_config.ts
+.DS_Store
 test.json
