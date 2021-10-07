@@ -1,23 +1,29 @@
-import { APIGatewayAuthorizerCallback, APIGatewayRequestAuthorizerEvent } from "aws-lambda";
+import { APIGatewayAuthorizerCallback, APIGatewayTokenAuthorizerEvent } from "aws-lambda";
 import { generatePolicy } from "@libs/generatePolicy";
 
-export const basicAuthorizer = async (event: APIGatewayRequestAuthorizerEvent, _ctx, callback: APIGatewayAuthorizerCallback) => {
-  if (event.type !== 'REQUEST') callback('Unauthorized');
+export const basicAuthorizer = async (event: APIGatewayTokenAuthorizerEvent, _ctx, callback: APIGatewayAuthorizerCallback) => {
+  if (event.type !== 'TOKEN') callback('Unauthorized');
 
   try {
-    const { token } = event.queryStringParameters;
-    console.log('authorization token: ', token);
+    const { authorizationToken } = event;
+    console.log('authorization token: ', authorizationToken);
 
-    const buffer = Buffer.from(token, 'base64');
+    const creds = authorizationToken.split(' ')[1];
+    if (!creds) {
+      callback('Authorization failed');
+      throw Error('No credentials provided!');
+    }
+
+    const buffer = Buffer.from(creds, 'base64');
     const [username, password] = buffer.toString('utf-8').split(':');
 
     console.log(JSON.stringify({username, password}));
 
     const originPassword = process.env[username];
 
-    const effect = originPassword && originPassword === password ? 'Allow' : 'Deny';
+    const effect = creds && originPassword && originPassword === password ? 'Allow' : 'Deny';
 
-    callback(null, generatePolicy('user', effect, event.methodArn));
+    callback(null, generatePolicy(creds, effect, event.methodArn));
 
   } catch (err: unknown){
     callback(`Authorization failed. Error:\n${err}`);

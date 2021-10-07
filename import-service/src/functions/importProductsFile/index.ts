@@ -17,11 +17,11 @@ export default {
           }
         },
         authorizer: {
-          type: 'request',
+          type: 'token',
           name: 'basicAuthorizer',
           arn: '${cf:authorization-service-dev.basicAuthorizerLambdaArn}',
           resultTtlInSeconds: 0,
-          identitySource: 'method.request.querystring.token'
+          identitySource: 'method.request.header.Authorization'
         }
       }
     }
