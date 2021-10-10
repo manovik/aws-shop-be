@@ -1,0 +1,12 @@
+{
+  "body": {
+    "updateProduct": {
+      "id": "f1b99324-29a5-4049-90a5-fba462bd89cc",
+      "title": "Updated Sneaker title",
+      "description": "Updated Sneaker description",
+      "price": 111,
+      "count": 12,
+      "img": "https://www.usb-antivirus.com/wp-content/uploads/2014/03/AdobePresenterUpdate.jpg"
+    }
+  }
+}
