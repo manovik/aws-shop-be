@@ -1,6 +1,3 @@
-import { PostSneaker } from '@app/types/types';
-import { logger } from '@app/utils/logger';
-
 export const getAllProductsSQL = (): string =>
   `select
     id,
@@ -14,9 +11,10 @@ export const getAllProductsSQL = (): string =>
   on stocks.product_id = products.id
   left join images
   on stocks.product_id = images.image_id
-  where stocks.count > 0`;
+  where stocks.count > 0 and
+  deleted_at is null`;
 
-export const getProductByIdSQL = (id: string): string =>
+export const getProductByIdSQL = (): string =>
   `select
     id,
     title,
@@ -29,35 +27,40 @@ export const getProductByIdSQL = (id: string): string =>
   on stocks.product_id = products.id
   left join images
   on stocks.product_id = images.image_id
-  where stocks.product_id = '${ id }'`;
+  where stocks.product_id = $1`;
 
-export const postProductSQL = ({
-  count,
-  img,
-  price,
-  description,
-  title
-}: PostSneaker): string => {
-  logger.info(
-    'LOG FROM postProductSQL',
-    {
-      count,
-      img,
-      price,
-      description,
-      title
-    }
-  );
-  
+export const postProductSQL = (): string => {  
   return `with prod as (
     insert into products (title, description, price) values
-    ('${ title }', '${ description }', ${ price })
+    ($1, $2, $3)
     returning id
     ), stock as (
       insert into stocks (product_id, count) values
-      ((select id from prod), ${ count })
+      ((select id from prod), $4)
       )	
       insert into images (image_id, image_link) values
-      ((select id from prod), '${ img }');`;
+      ((select id from prod), $5)
+    returning (select id from prod);`;
   
+};
+
+export const updateProductSQL = {
+  upd_Products: (): string => `update products
+    set title =  $1,
+    description = $2,
+    price = $3
+    where id = $4`,
+  upd_Stocks: (): string => `
+    update stocks 
+    set count = $1
+    where product_id = $2
+    `,
+  upd_Images: (): string => `
+  update images
+  set image_link = $1
+  where image_id = $2`
+};
+
+export const deleteProductSQL = (): string => {
+  return 'update products set deleted_at = $1 where id = $2';
 };
