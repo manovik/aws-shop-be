@@ -3,7 +3,7 @@ import * as functions from '@app/functions';
 import { GLOBAL_INFO } from '@app/constants';
 
 const serverlessConfiguration: AWS = {
-  service: 'import-service',
+  service: GLOBAL_INFO.IMPORT_SERVICE,
   frameworkVersion: '2',
   custom: {
     webpack: {
@@ -22,18 +22,24 @@ const serverlessConfiguration: AWS = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      SQS_URL: `\${cf:${ GLOBAL_INFO.PRODUCT_SERVICE }-dev.catalogItemsQueueRef}`,
     },
     lambdaHashingVersion: '20201221',
     iamRoleStatements: [
       {
         Effect: 'Allow',
         Action: 's3:ListBucket',
-        Resource: 'arn:aws:s3:::csv-bucket-eu-west-1-pinapple-shop'
+        Resource: `arn:aws:s3:::csv-bucket-${ GLOBAL_INFO.REGION }-pinapple-shop`
       },
       {
         Effect: 'Allow',
         Action: 's3:*',
-        Resource: 'arn:aws:s3:::csv-bucket-eu-west-1-pinapple-shop/*'
+        Resource: `arn:aws:s3:::csv-bucket-${ GLOBAL_INFO.REGION }-pinapple-shop/*`
+      },
+      {
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: `\${cf:${ GLOBAL_INFO.PRODUCT_SERVICE }-dev.catalogItemsQueueArn}`
       },
     ],
   },

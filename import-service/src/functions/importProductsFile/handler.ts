@@ -14,7 +14,7 @@ const handler = async (event: APIGatewayProxyEvent) => {
     Key: 'uploaded/' + event.queryStringParameters.name,
     Expires: 60,
     ContentType: 'text/csv',
-  }
+  };
 
   try {
     const link = await s3.getSignedUrlPromise('putObject', params);
@@ -22,12 +22,12 @@ const handler = async (event: APIGatewayProxyEvent) => {
       statusCode: 200,
       response: link,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return formatJSONResponse({
       response: err,
       statusCode: 500
     });
   }
-}
+};
 
 export const importProductsFile = middyfy(handler);

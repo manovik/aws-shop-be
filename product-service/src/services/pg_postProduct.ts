@@ -1,10 +1,21 @@
 import { PostSneaker } from 'src/types/types';
-import { Client, QueryResultRow } from 'pg';
-import { dbConfig } from '@app/libs/dbConfig';
+import { Client, ClientConfig } from 'pg';
 import { postProductSQL } from '@app/sql';
 import { logger } from '@app/utils/logger';
 
 const productErrorText = 'Product was not added to database!';
+
+const dbConfig: ClientConfig = {
+  host: process.env.PG_HOST,
+  port: +process.env.PG_PORT,
+  database: process.env.PG_DB,
+  user: process.env.PG_USER,
+  password: process.env.PG_PASS,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  connectionTimeoutMillis: 5000,
+};
 
 export const PG_postProduct = async ({
   count,
@@ -26,35 +37,43 @@ export const PG_postProduct = async ({
     !title ||
     typeof title !== 'string'
   ) {
-    logger.info({
-      msg: `#29 ###### ${productErrorText}`,
-      passedParams: {
-        count,
-        img,
-        price,
-        description,
-        title,
+    logger.info(
+      `#30 ###### ${ productErrorText }`,
+      {
+        passedParams: {
+          count,
+          img,
+          price,
+          description,
+          title,
+        },
+        passedParamsTypes: {
+          count: typeof count,
+          img: typeof img,
+          price: typeof price,
+          description: typeof description,
+          title: typeof title,
+        },
       },
-      passedParamsTypes: {
-        count: typeof count,
-        img: typeof img,
-        price: typeof price,
-        description: typeof description,
-        title: typeof title,
-      },
-    });
+    );
     return {
       error:
-        "One of values was not provided or it's type doesn't passed validation. " +
+        'One of values was not provided or it\'s type doesn\'t passed validation. ' +
         productErrorText,
     };
   }
 
-  const client = new Client(dbConfig);
-  await client.connect();
-
+  logger.info(dbConfig);
+  let client;
   try {
-    const { rows }: {rows: QueryResultRow} = await client.query(
+    client = new Client(dbConfig);
+    logger.info('Trying to connect to DB');
+    await client.connect();
+    
+    logger.info('Connected to database');
+
+    await client.query('BEGIN');
+    await client.query(
       postProductSQL({
         count,
         img,
@@ -63,17 +82,15 @@ export const PG_postProduct = async ({
         title,
       })
     );
-    const hashEnd = `...${rows[0].id.slice(-6)}`
-    logger.info({
-      msg: `${hashEnd} added to database now`,
-    });
-
-    return hashEnd;
-  } catch (error: unknown) {
-    logger.info({
-      msg: '#73 ###### Something went wrong with database!\n',
-      error
-    });
+    await client.query('COMMIT');
+    logger.info(`${ title } added to database now`);
+      
+    return title;
+  } catch (err: unknown) {
+    logger.info(
+      err,
+      '#75 ###### Something went wrong with database!\n',
+    );
     return {
       error: productErrorText,
     };

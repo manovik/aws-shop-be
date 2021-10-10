@@ -9,16 +9,16 @@ export const PG_getProductById = async (id: string): Promise<Sneaker[]> => {
   await client.connect();
 
   try {
-    const { rows }: { rows: Sneaker[] } = await client.query(
+    const { rows } = await client.query<Sneaker>(
       getProductByIdSQL(id)
     );
 
     return rows;
-  } catch (error: unknown) {
-    logger.info({
-      msg: '#19 ###### Something went wrong while getting product by Id!',
-      error
-    });
+  } catch (err: unknown) {
+    logger.info(
+      err,
+      '#20 ###### Something went wrong while getting product by Id!',
+    );
   } finally {
     client.end();
   }

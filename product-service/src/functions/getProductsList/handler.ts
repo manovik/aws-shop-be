@@ -17,18 +17,16 @@ export const handler = async (): Promise<FormatJSONResponseType> => {
         product: [],
       });
     }
-    logger.info({
-      msg: `Getting product list.`,
-    });
+    logger.info('Getting product list.');
     return formatJSONResponse({
       statusCode: STATUS.SUCCESS,
       product,
     });
-  } catch (error: unknown) {
-    logger.info({
-      msg: '#29 ###### Something went wrong while getting product list!',
-      error,
-    });
+  } catch (err: unknown) {
+    logger.info(
+      err,
+      '#28 ###### Something went wrong while getting product list!',
+    );
     return formatJSONResponse({
       statusCode: STATUS.SERV_ERR,
       product: [],
