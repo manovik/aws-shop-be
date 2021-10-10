@@ -1,21 +1,10 @@
-import { PostSneaker } from 'src/types/types';
-import { Client, ClientConfig } from 'pg';
+import { PostSneaker, Sneaker } from 'src/types/types';
+import { Client } from 'pg';
+import { dbConfig } from '@app/libs/dbConfig';
 import { postProductSQL } from '@app/sql';
 import { logger } from '@app/utils/logger';
 
 const productErrorText = 'Product was not added to database!';
-
-const dbConfig: ClientConfig = {
-  host: process.env.PG_HOST,
-  port: +process.env.PG_PORT,
-  database: process.env.PG_DB,
-  user: process.env.PG_USER,
-  password: process.env.PG_PASS,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeoutMillis: 5000,
-};
 
 export const PG_postProduct = async ({
   count,
@@ -23,7 +12,7 @@ export const PG_postProduct = async ({
   price,
   description,
   title,
-}: PostSneaker): Promise<string | { error: string }> => {
+}: PostSneaker): Promise<string | Record<string, string> | { error: string }> => {
   if (
     !count ||
     typeof count !== 'number' ||
@@ -58,7 +47,7 @@ export const PG_postProduct = async ({
     );
     return {
       error:
-        'One of values was not provided or it\'s type doesn\'t passed validation. ' +
+        'One of values was not provided or it\'s type didn\'t pass validation. ' +
         productErrorText,
     };
   }
@@ -73,19 +62,21 @@ export const PG_postProduct = async ({
     logger.info('Connected to database');
 
     await client.query('BEGIN');
-    await client.query(
-      postProductSQL({
+    const { rows } = await client.query<Pick<Sneaker, 'id'>>(
+      postProductSQL(),
+      [
+        title,
+        description,
+        price,
         count,
         img,
-        price,
-        description,
-        title,
-      })
+      ]
     );
+    const [{ id }] = rows;
     await client.query('COMMIT');
-    logger.info(`${ title } added to database now`);
-      
-    return title;
+    logger.info(`${ id } added to database now`);
+    
+    return id;
   } catch (err: unknown) {
     logger.info(
       err,

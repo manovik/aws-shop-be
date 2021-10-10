@@ -6,19 +6,20 @@ import { middyfy } from '@libs/lambda';
 import { PG_postProduct } from '@app/services/pg_postProduct';
 import { STATUS } from '@app/constants';
 import { logger } from '@app/utils/logger';
+import { cutId } from '@app/utils/cutId';
 
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<FormatJSONResponseType> => {
   try {
-    const { postProduct }: { postProduct: PostSneaker } = JSON.parse(event.body);
+    const { postProduct }: Record<string, PostSneaker> = event.body as any;
     const result = await PG_postProduct(postProduct);
 
     if (typeof result === 'string') {
-      logger.info('Posted new product!');
+      logger.info(`Posted new product with id ${ cutId(result) }`);
       return formatJSONResponse({
         statusCode: STATUS.SUCCESS,
-        message: 'Product successfully added to database',
+        message: `Product with id ${ cutId(result) } successfully added to database`,
       });
     }
 

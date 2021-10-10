@@ -10,7 +10,8 @@ export const PG_getProductById = async (id: string): Promise<Sneaker[]> => {
 
   try {
     const { rows } = await client.query<Sneaker>(
-      getProductByIdSQL(id)
+      getProductByIdSQL(),
+      [id]
     );
 
     return rows;
