@@ -11,11 +11,11 @@ export const catalogBatchProcess = async (event: SQSEvent): Promise<void> => {
   const products: PostSneaker[] = event.Records.map(({ body }) => JSON.parse(body));
   for (const product of products) {
     try {
-      const { title, description, price, img, count } = product;
+      const { title, description, price, image_link, count } = product;
 
       logger.info({
         count: +count,
-        img,
+        image_link,
         price: +price,
         description,
         title,
@@ -23,7 +23,7 @@ export const catalogBatchProcess = async (event: SQSEvent): Promise<void> => {
       
       const res = await PG_postProduct({
         count: +count,
-        img,
+        image_link,
         price: +price,
         description,
         title

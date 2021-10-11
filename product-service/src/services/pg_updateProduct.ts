@@ -10,7 +10,7 @@ const productErrorText = 'Product was not added to database!';
 export const PG_updateProduct = async ({
   id,
   count,
-  img,
+  image_link,
   price,
   description,
   title,
@@ -19,8 +19,8 @@ export const PG_updateProduct = async ({
     !count ||
     typeof count !== 'number' ||
     count < 1 ||
-    !img ||
-    typeof img !== 'string' ||
+    !image_link ||
+    typeof image_link !== 'string' ||
     !price ||
     typeof price !== 'number' ||
     !description ||
@@ -36,7 +36,7 @@ export const PG_updateProduct = async ({
         passedParams: {
           id,
           count,
-          img,
+          image_link,
           price,
           description,
           title,
@@ -44,7 +44,7 @@ export const PG_updateProduct = async ({
         passedParamsTypes: {
           id: typeof id,
           count: typeof count,
-          img: typeof img,
+          image_link: typeof image_link,
           price: typeof price,
           description: typeof description,
           title: typeof title,
@@ -68,7 +68,7 @@ export const PG_updateProduct = async ({
     await client.query(updateProductSQL.upd_Stocks(), [count, id]);
     logger.info(`${ cutId(id) } was updated in Stocks table`);
 
-    await client.query(updateProductSQL.upd_Images(), [img, id]);
+    await client.query(updateProductSQL.upd_Images(), [image_link, id]);
     logger.info(`${ cutId(id) } was updated in Images table`);
 
     await client.query('COMMIT');

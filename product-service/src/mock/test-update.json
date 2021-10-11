@@ -6,7 +6,7 @@
       "description": "Updated Sneaker description",
       "price": 111,
       "count": 12,
-      "img": "https://www.usb-antivirus.com/wp-content/uploads/2014/03/AdobePresenterUpdate.jpg"
+      "image_link": "https://www.usb-antivirus.com/wp-content/uploads/2014/03/AdobePresenterUpdate.jpg"
     }
   }
 }

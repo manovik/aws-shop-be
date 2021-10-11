@@ -41,7 +41,7 @@ with prod as (
       ((select id from prod), ${count})
   )	
   insert into images (image_id, image_link) values
-    ((select id from prod), '${img}')
+    ((select id from prod), '${image_link}')
   returning (select id from prod);
 commit;
 

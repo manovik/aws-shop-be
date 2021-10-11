@@ -8,7 +8,7 @@ const productErrorText = 'Product was not added to database!';
 
 export const PG_postProduct = async ({
   count,
-  img,
+  image_link,
   price,
   description,
   title,
@@ -17,8 +17,8 @@ export const PG_postProduct = async ({
     !count ||
     typeof count !== 'number' ||
     count < 1 ||
-    !img ||
-    typeof img !== 'string' ||
+    !image_link ||
+    typeof image_link !== 'string' ||
     !price ||
     typeof price !== 'number' ||
     !description ||
@@ -31,14 +31,14 @@ export const PG_postProduct = async ({
       {
         passedParams: {
           count,
-          img,
+          image_link,
           price,
           description,
           title,
         },
         passedParamsTypes: {
           count: typeof count,
-          img: typeof img,
+          image_link: typeof image_link,
           price: typeof price,
           description: typeof description,
           title: typeof title,
@@ -69,7 +69,7 @@ export const PG_postProduct = async ({
         description,
         price,
         count,
-        img,
+        image_link,
       ]
     );
     const [{ id }] = rows;
