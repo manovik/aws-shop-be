@@ -1,9 +1,9 @@
 import 'source-map-support/register';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { FormatJSONResponseType, PostSneaker } from '@app/types/types';
+import { FormatJSONResponseType, Sneaker } from '@app/types/types';
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
-import { PG_postProduct } from '@app/services/pg_postProduct';
+import { PG_updateProduct } from '@app/services/pg_updateProduct';
 import { STATUS } from '@app/constants';
 import { logger } from '@app/utils/logger';
 import { cutId } from '@app/utils/cutId';
@@ -12,32 +12,27 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<FormatJSONResponseType> => {
   try {
-    const { postProduct }: Record<string, PostSneaker> = event.body as any;
-    const result = await PG_postProduct(postProduct);
+    const { updateProduct }: Record<string, Sneaker> = event.body as any;
+    const result = await PG_updateProduct(updateProduct);
 
     if (typeof result === 'string') {
-      logger.info(`Posted new product with id ${ cutId(result) }`);
+      logger.info('Updated product!');
       return formatJSONResponse({
         statusCode: STATUS.SUCCESS,
-        message: `Product with id ${ cutId(result) } successfully added to database`,
+        message: `Product with id ${ cutId(result) } successfully updated`,
+      });
+    } else {
+      const message = `Failed to update product with id ${ cutId( updateProduct.id ) }`;
+      logger.info(message);
+      return formatJSONResponse({
+        statusCode: STATUS.INVALID,
+        message,
       });
     }
-
-    const { error } = result as { error: string };
-
-    logger.info(
-      { err: error },
-      'Failed to post new product!',
-    );
-
-    return formatJSONResponse({
-      statusCode: STATUS.INVALID,
-      message: error,
-    });
   } catch (err: unknown) {
     logger.info(
       err,
-      '#40 ###### Something went wrong!\nFailed to post new product!',
+      '#40 ###### Something went wrong!\nFailed to update new product!',
     );
 
     return formatJSONResponse({
@@ -47,4 +42,4 @@ export const handler = async (
   }
 };
 
-export const postProduct = middyfy(handler);
+export const updateProduct = middyfy(handler);

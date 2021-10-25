@@ -40,7 +40,7 @@ const mockRightResponse = {
       {
         count: 10,
         id: 'SB-CT1972-006',
-        img: 'https://sneakers.by/image/cache/data/1C-1/SB-CT1972-006-300x300.webp',
+        image_link: 'https://sneakers.by/image/cache/data/1C-1/SB-CT1972-006-300x300.webp',
         price: 299,
         description: 'Nike Kyrie FlyTrap IV (CT1972-006)',
         title: 'Nike Kyrie FlyTrap IV',

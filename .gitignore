@@ -5,3 +5,4 @@ coverage
 db_config.ts
 .DS_Store
 test.json
+.env

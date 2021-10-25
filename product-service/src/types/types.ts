@@ -1,7 +1,7 @@
 export type Sneaker = {
   count: number,
   id: string,
-  img: string,
+  image_link: string,
   price: number,
   description: string,
   title: string

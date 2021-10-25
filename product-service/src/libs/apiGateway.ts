@@ -27,6 +27,19 @@ export const formatJSONResponse = (
         )
       }),
     };
+  case STATUS.DELETED:
+    return {
+      statusCode: STATUS.DELETED,
+      headers,
+      body: JSON.stringify({
+        product,
+        message: (
+          message
+            ? message
+            : messageCreator(STATUS.DELETED)
+        )
+      }),
+    };
   case STATUS.NOT_FOUND:
     return {
       statusCode: STATUS.NOT_FOUND,

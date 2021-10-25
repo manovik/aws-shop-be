@@ -1,18 +1,20 @@
-import { PostSneaker, Sneaker } from 'src/types/types';
+import { Sneaker } from 'src/types/types';
 import { Client } from 'pg';
 import { dbConfig } from '@app/libs/dbConfig';
-import { postProductSQL } from '@app/sql';
+import { updateProductSQL } from '@app/sql';
 import { logger } from '@app/utils/logger';
+import { cutId } from '@app/utils/cutId';
 
 const productErrorText = 'Product was not added to database!';
 
-export const PG_postProduct = async ({
+export const PG_updateProduct = async ({
+  id,
   count,
   image_link,
   price,
   description,
   title,
-}: PostSneaker): Promise<string | Record<string, string> | { error: string }> => {
+}: Sneaker): Promise<string | unknown> => {
   if (
     !count ||
     typeof count !== 'number' ||
@@ -24,12 +26,15 @@ export const PG_postProduct = async ({
     !description ||
     typeof description !== 'string' ||
     !title ||
-    typeof title !== 'string'
+    typeof title !== 'string' ||
+    !id ||
+    typeof id !== 'string'
   ) {
     logger.info(
-      `#30 ###### ${ productErrorText }`,
+      `${ productErrorText }`,
       {
         passedParams: {
+          id,
           count,
           image_link,
           price,
@@ -37,6 +42,7 @@ export const PG_postProduct = async ({
           title,
         },
         passedParamsTypes: {
+          id: typeof id,
           count: typeof count,
           image_link: typeof image_link,
           price: typeof price,
@@ -45,46 +51,35 @@ export const PG_postProduct = async ({
         },
       },
     );
-    return {
-      error:
-        'One of values was not provided or it\'s type didn\'t pass validation. ' +
-        productErrorText,
-    };
+    logger.info('One of values was not provided or it\'s type didn\'t pass validation.');
   }
 
-  logger.info(dbConfig);
-  let client;
+  const client = new Client(dbConfig);
   try {
-    client = new Client(dbConfig);
     logger.info('Trying to connect to DB');
     await client.connect();
     
     logger.info('Connected to database');
 
     await client.query('BEGIN');
-    const { rows } = await client.query<Pick<Sneaker, 'id'>>(
-      postProductSQL(),
-      [
-        title,
-        description,
-        price,
-        count,
-        image_link,
-      ]
-    );
-    const [{ id }] = rows;
+    await client.query(updateProductSQL.upd_Products(), [title, description, price, id]);
+    logger.info(`${ cutId(id) } was updated in Products table`);
+
+    await client.query(updateProductSQL.upd_Stocks(), [count, id]);
+    logger.info(`${ cutId(id) } was updated in Stocks table`);
+
+    await client.query(updateProductSQL.upd_Images(), [image_link, id]);
+    logger.info(`${ cutId(id) } was updated in Images table`);
+
     await client.query('COMMIT');
-    logger.info(`${ id } added to database now`);
-    
+    logger.info(`${ cutId(id) } was updated`);
     return id;
   } catch (err: unknown) {
     logger.info(
       err,
       '#75 ###### Something went wrong with database!\n',
     );
-    return {
-      error: productErrorText,
-    };
+    return err;
   } finally {
     client.end();
   }

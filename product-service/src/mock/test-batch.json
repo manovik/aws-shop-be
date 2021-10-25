@@ -1,0 +1,31 @@
+{
+  "Records": [
+    {
+      "body": {
+        "count": 10,
+        "image_link": "https://sneakers.by/image/cache/data/1C-1/SB-FY7755-300x300.webp",
+        "price": 309,
+        "description": "Adidas Forum Low (FY7755)",
+        "title": "Adidas Forum Low"
+      }
+    },
+    {
+      "body": {
+        "count": 10,
+        "image_link": "https://sneakers.by/image/cache/data/1C-1/SB-FY4975-300x300.webp",
+        "price": 329,
+        "description": "Adidas Forum Mid (FY4975)",
+        "title": "Adidas Forum Mid"
+      }
+    },
+    {
+      "body": {
+        "count": 10,
+        "image_link": "https://sneakers.by/image/cache/data/1C-1/SB-CW2288-001-300x300.webp",
+        "price": 349,
+        "description": "Nike Air Force 1 07 (CW2288-001)",
+        "title": "Nike Air Force 1 07"
+      }
+    }
+  ]
+}
