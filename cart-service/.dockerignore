@@ -1,0 +1,7 @@
+# ignore all
+*
+
+# except next
+!src
+!package*.json
+!tsconfig*.json
